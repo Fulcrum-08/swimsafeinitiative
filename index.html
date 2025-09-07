@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SwimSafe Calendar</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    iframe { margin-bottom: 20px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #status { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>SwimSafe Initiative Calendar</h1>
+
+  <!-- Embedded Calendar -->
+  <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York"
+    style="border:0" width="800" height="600" frameborder="0" scrolling="no">
+  </iframe>
+
+  <br>
+  <button onclick="requestSignup()">Request Sign-Up</button>
+  <p id="status"></p>
+
+  <script>
+    async function requestSignup() {
+      const name = prompt("Enter your name:");
+      const email = prompt("Enter your email:");
+      const event = prompt("Which event are you signing up for?");
+
+      if (!name || !email || !event) {
+        document.getElementById("status").innerText = "❌ All fields are required.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/signup-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, event })
+        });
+        const data = await res.json();
+        document.getElementById("status").innerText = data.success
+          ? "✅ Request sent!"
+          : "❌ Error: " + data.message;
+      } catch (err) {
+        document.getElementById("status").innerText = "❌ Network error.";
+      }
+    }
+  </script>
+</body>
+</html>
