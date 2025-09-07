@@ -1,102 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signed In</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signed In</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        header {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 20px;
-            box-sizing: border-box;
-            background-color: #f0f0f0;
-            position: relative;
-        }
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #f0f0f0;
+    }
 
-        #user-photo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-left: 10px;
-        }
+    #user-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
 
-        #signout {
-            margin-left: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+    #signout {
+      margin-left: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
 
-        h1 {
-            margin: 20px 0;
-        }
+    h1 {
+      margin: 20px 0;
+    }
 
-        iframe {
-            border: none;
-            width: 800px;
-            height: 600px;
-        }
-    </style>
+    iframe {
+      border: none;
+      width: 800px;
+      height: 600px;
+    }
+
+    .reservation-box {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 400px;
+    }
+
+    .reservation-box input,
+    .reservation-box button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <span id="user-name"></span>
-        <img id="user-photo" alt="Profile Picture">
-        <button id="signout">Sign Out</button>
-    </header>
+  <header>
+    <span id="user-name"></span>
+    <img id="user-photo" alt="Profile Picture">
+    <button id="signout">Sign Out</button>
+  </header>
 
-    <h1>Welcome!</h1>
+  <h1>Welcome!</h1>
 
-    <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+  <!-- Reservation form -->
+  <div class="reservation-box">
+    <h2>Reserve a Time Slot</h2>
+    <input type="text" id="reserver-name" placeholder="Your Name" required>
+    <input type="datetime-local" id="reserver-time" required>
+    <button id="reserve-btn">Reserve</button>
+    <p id="status"></p>
+  </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <!-- Google Calendar -->
+  <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York"></iframe>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
-            authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
-            projectId: "swimsafeinitiative-7809c",
-            storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
-            messagingSenderId: "1025750665332",
-            appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
-            measurementId: "G-5W2JEV3VR3"
-        };
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const userName = document.getElementById("user-name");
-            const userPhoto = document.getElementById("user-photo");
-            const signOutButton = document.getElementById("signout");
+  <script>
+    // Firebase setup
+    const firebaseConfig = {
+      apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+      authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+      projectId: "swimsafeinitiative-7809c",
+      storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+      messagingSenderId: "1025750665332",
+      appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+      measurementId: "G-5W2JEV3VR3"
+    };
 
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    userName.textContent = user.displayName;
-                    userPhoto.src = user.photoURL;
-                } else {
-                    window.location.replace("index.html");
-                }
-            });
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-            signOutButton.addEventListener("click", () => {
-                auth.signOut().then(() => window.location.replace("index.html"));
-            });
+    document.addEventListener("DOMContentLoaded", () => {
+      const userName = document.getElementById("user-name");
+      const userPhoto = document.getElementById("user-photo");
+      const signOutButton = document.getElementById("signout");
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          userName.textContent = user.displayName;
+          userPhoto.src = user.photoURL;
+        } else {
+          window.location.replace("index.html");
+        }
+      });
+
+      signOutButton.addEventListener("click", () => {
+        auth.signOut().then(() => window.location.replace("index.html"));
+      });
+    });
+
+    // EmailJS setup
+    emailjs.init("YOUR_PUBLIC_KEY"); // replace with your EmailJS public key
+
+    document.getElementById("reserve-btn").addEventListener("click", () => {
+      const name = document.getElementById("reserver-name").value;
+      const time = document.getElementById("reserver-time").value;
+      const status = document.getElementById("status");
+
+      if (!name || !time) {
+        status.textContent = "Please enter all fields.";
+        return;
+      }
+
+      const templateParams = {
+        to_email: "swimsafeinitiative@gmail.com",
+        from_name: name,
+        reservation_time: new Date(time).toLocaleString()
+      };
+
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", templateParams)
+        .then(() => {
+          status.textContent = "Reservation request sent!";
+        }, (err) => {
+          console.error("Failed to send", err);
+          status.textContent = "Error sending reservation.";
         });
-    </script>
+    });
+  </script>
 </body>
 </html>
