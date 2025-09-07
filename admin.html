@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+
+        #user-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        #signout {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        h1 {
+            margin: 40px 0;
+        }
+
+        .admin-content {
+            width: 800px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <img id="user-photo" alt="Profile Picture">
+    <button id="signout">Sign Out</button>
+
+    <h1>Admin Dashboard</h1>
+
+    <div class="admin-content">
+        <p>Welcome, admin! Here you can manage users, view special data, or perform administrative tasks.</p>
+        <!-- Add more admin features here -->
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+            authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+            projectId: "swimsafeinitiative-7809c",
+            storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+            messagingSenderId: "1025750665332",
+            appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+            measurementId: "G-5W2JEV3VR3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const userPhoto = document.getElementById("user-photo");
+            const signOutButton = document.getElementById("signout");
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Only allow admin to view this page
+                    if (user.email !== "swimsafeinitiative@gmail.com") {
+                        window.location.replace("signedin.html"); // normal user page
+                        return;
+                    }
+
+                    // Show admin profile photo
+                    userPhoto.src = user.photoURL;
+                } else {
+                    window.location.replace("index.html"); // not logged in
+                }
+            });
+
+            signOutButton.addEventListener("click", () => {
+                auth.signOut().then(() => window.location.replace("index.html"));
+            });
+        });
+    </script>
+</body>
+</html>
