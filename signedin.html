@@ -5,12 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signed In</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        #user-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        #signout {
+            margin-left: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        h1 {
+            margin: 20px 0;
+        }
+
+        iframe {
+            border: none;
+            width: 800px;
+            height: 600px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, <span id="user-name"></span>!</h1>
-    <img id="user-photo" alt="Profile Picture">
-    <br>
-    <button id="signout">Sign Out</button>
+    <header>
+        <span id="user-name"></span>
+        <img id="user-photo" alt="Profile Picture">
+        <button id="signout">Sign Out</button>
+    </header>
+
+    <h1>Welcome!</h1>
+
+    <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -35,7 +84,6 @@
             const userPhoto = document.getElementById("user-photo");
             const signOutButton = document.getElementById("signout");
 
-            // Display user info or redirect if not logged in
             auth.onAuthStateChanged(user => {
                 if (user) {
                     userName.textContent = user.displayName;
@@ -45,7 +93,6 @@
                 }
             });
 
-            // Sign out
             signOutButton.addEventListener("click", () => {
                 auth.signOut().then(() => window.location.replace("index.html"));
             });
