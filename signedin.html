@@ -11,10 +11,18 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            background-color: #f9f9f9;
+        }
+
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            background-color: #f0f0f0;
             position: relative;
         }
 
@@ -22,36 +30,36 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            margin-left: 10px;
         }
 
         #signout {
-            position: fixed;
-            top: 70px;
-            right: 10px;
+            margin-left: 10px;
             padding: 5px 10px;
             cursor: pointer;
-            z-index: 1000;
+        }
+
+        h1 {
+            margin: 20px 0;
         }
 
         iframe {
-            border: 0;
+            border: none;
             width: 800px;
             height: 600px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <img id="user-photo" alt="Profile Picture">
-    <button id="signout">Sign Out</button>
+    <header>
+        <span id="user-name"></span>
+        <img id="user-photo" alt="Profile Picture">
+        <button id="signout">Sign Out</button>
+    </header>
 
-    <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York" frameborder="0" scrolling="no"></iframe>
+    <h1>Welcome!</h1>
+
+    <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -72,11 +80,13 @@
         const auth = firebase.auth();
 
         document.addEventListener("DOMContentLoaded", () => {
+            const userName = document.getElementById("user-name");
             const userPhoto = document.getElementById("user-photo");
             const signOutButton = document.getElementById("signout");
 
             auth.onAuthStateChanged(user => {
                 if (user) {
+                    userName.textContent = user.displayName;
                     userPhoto.src = user.photoURL;
                 } else {
                     window.location.replace("index.html");
