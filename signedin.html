@@ -34,4 +34,16 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById("user-name").textContent = user.displayName;
-                document.getElementBy
+                document.getElementById("user-photo").src = user.photoURL;
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // Sign out
+        document.getElementById("signout").addEventListener("click", () => {
+            auth.signOut().then(() => window.location.href = "index.html");
+        });
+    </script>
+</body>
+</html>
