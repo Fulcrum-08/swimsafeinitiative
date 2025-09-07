@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in</title>
+    <title>Signed In</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome!</h1>
-    <button id="google-signin">Sign in with Google</button>
+    <h1>Hello, <span id="user-name"></span>!</h1>
+    <img id="user-photo" alt="Profile Picture">
+    <br>
+    <button id="signout">Sign Out</button>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -25,26 +27,11 @@
           measurementId: "G-5W2JEV3VR3"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Redirect if already signed in
+        // Display user info or redirect if not logged in
         auth.onAuthStateChanged(user => {
             if (user) {
-                window.location.href = "signedin.html";
-            }
-        });
-
-        // Sign in with Google
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("google-signin").addEventListener("click", () => {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider)
-                    .then(() => window.location.href = "signedin.html")
-                    .catch(err => console.error(err));
-            });
-        });
-    </script>
-</body>
-</html>
+                document.getElementById("user-name").textContent = user.displayName;
+                document.getElementBy
