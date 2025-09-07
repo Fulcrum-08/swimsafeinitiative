@@ -76,8 +76,10 @@
   <!-- Reservation form -->
   <div class="reservation-box">
     <h2>Reserve a Time Slot</h2>
-    <input type="text" id="reserver-name" placeholder="Your Name" required>
-    <input type="datetime-local" id="reserver-time" required>
+    <label for="start-time">Start Time:</label>
+    <input type="datetime-local" id="start-time" required>
+    <label for="end-time">End Time:</label>
+    <input type="datetime-local" id="end-time" required>
     <button id="reserve-btn">Reserve</button>
     <p id="status"></p>
   </div>
@@ -106,6 +108,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    let currentUserEmail = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       const userName = document.getElementById("user-name");
@@ -114,8 +117,9 @@
 
       auth.onAuthStateChanged(user => {
         if (user) {
-          userName.textContent = user.displayName;
-          userPhoto.src = user.photoURL;
+          currentUserEmail = user.email;
+          userName.textContent = user.displayName || user.email;
+          userPhoto.src = user.photoURL || "";
         } else {
           window.location.replace("index.html");
         }
@@ -130,19 +134,20 @@
     emailjs.init("YOUR_PUBLIC_KEY"); // replace with your EmailJS public key
 
     document.getElementById("reserve-btn").addEventListener("click", () => {
-      const name = document.getElementById("reserver-name").value;
-      const time = document.getElementById("reserver-time").value;
+      const start = document.getElementById("start-time").value;
+      const end = document.getElementById("end-time").value;
       const status = document.getElementById("status");
 
-      if (!name || !time) {
-        status.textContent = "Please enter all fields.";
+      if (!start || !end) {
+        status.textContent = "Please enter both start and end times.";
         return;
       }
 
       const templateParams = {
         to_email: "swimsafeinitiative@gmail.com",
-        from_name: name,
-        reservation_time: new Date(time).toLocaleString()
+        user_email: currentUserEmail,
+        start_time: new Date(start).toLocaleString(),
+        end_time: new Date(end).toLocaleString()
       };
 
       emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", templateParams)
