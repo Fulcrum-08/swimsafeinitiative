@@ -17,34 +17,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // Replace with your Firebase config
-       const firebaseConfig = {
-  apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
-  authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
-  projectId: "swimsafeinitiative-7809c",
-  storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
-  messagingSenderId: "1025750665332",
-  appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
-  measurementId: "G-5W2JEV3VR3"
+        const firebaseConfig = {
+          apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+          authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+          projectId: "swimsafeinitiative-7809c",
+          storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+          messagingSenderId: "1025750665332",
+          appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+          measurementId: "G-5W2JEV3VR3"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Show user info or redirect if not logged in
+        // Display user info or redirect if not logged in
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById("user-name").textContent = user.displayName;
-                document.getElementById("user-photo").src = user.photoURL;
-            } else {
-                window.location.href = "index.html";
-            }
-        });
-
-        document.getElementById("signout").addEventListener("click", () => {
-            auth.signOut().then(() => {
-                window.location.href = "index.html";
-            });
-        });
-    </script>
-</body>
-</html>
+                document.getElementBy

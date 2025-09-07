@@ -15,32 +15,35 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <script>
-        // Replace with your Firebase config
-     const firebaseConfig = {
-  apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
-  authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
-  projectId: "swimsafeinitiative-7809c",
-  storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
-  messagingSenderId: "1025750665332",
-  appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
-  measurementId: "G-5W2JEV3VR3"
+        const firebaseConfig = {
+          apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+          authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+          projectId: "swimsafeinitiative-7809c",
+          storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+          messagingSenderId: "1025750665332",
+          appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+          measurementId: "G-5W2JEV3VR3"
+        };
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Redirect to signed-in page if already logged in
+        // Redirect if already signed in
         auth.onAuthStateChanged(user => {
             if (user) {
                 window.location.href = "signedin.html";
             }
         });
 
-        document.getElementById("google-signin").addEventListener("click", () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then(() => {
-                    window.location.href = "signedin.html";
-                })
-                .catch(error => console.error(error));
+        // Sign in with Google
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("google-signin").addEventListener("click", () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .then(() => window.location.href = "signedin.html")
+                    .catch(err => console.error(err));
+            });
         });
     </script>
 </body>
