@@ -50,11 +50,19 @@
         #google-signin:hover {
             transform: scale(1.05);
         }
+
+        #google-signin img {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to the SwimSafe Initiative!</h1>
-    <button id="google-signin">Sign in with Google</button>
+    <button id="google-signin">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon">
+        Sign in with Google
+    </button>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
