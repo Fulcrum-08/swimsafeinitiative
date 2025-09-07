@@ -1,36 +1,39 @@
-async function checkAuth() {
-  const res = await fetch("/auth/status");
-  const data = await res.json();
-
-  if (data.loggedIn) {
-    document.getElementById("login-btn").style.display = "none";
-    document.getElementById("logout-btn").style.display = "inline";
-    document.getElementById("signup-section").style.display = "block";
-  } else {
-    document.getElementById("login-btn").style.display = "inline";
-    document.getElementById("logout-btn").style.display = "none";
-    document.getElementById("signup-section").style.display = "none";
-  }
-}
-
-document.getElementById("login-btn").onclick = () => {
-  window.location.href = "/auth/google";
-};
-document.getElementById("logout-btn").onclick = () => {
-  window.location.href = "/auth/logout";
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+  authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+  projectId: "swimsafeinitiative-7809c",
+  storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+  messagingSenderId: "1025750665332",
+  appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+  measurementId: "G-5W2JEV3VR3"
 };
 
-document.getElementById("signup-btn").onclick = async () => {
-  const event = document.getElementById("event").value;
-  const res = await fetch("/signup-request", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event })
-  });
-  const data = await res.json();
-  document.getElementById("status").innerText = data.success
-    ? "Request sent successfully!"
-    : "Error sending request.";
-};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-checkAuth();
+// Sign in with Google
+const googleButton = document.getElementById("google-signin");
+googleButton.addEventListener("click", () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            const user = result.user;
+            document.getElementById("user-name").textContent = `Hello, ${user.displayName}`;
+            document.getElementById("user-photo").src = user.photoURL;
+            document.getElementById("user-info").style.display = "block";
+            googleButton.style.display = "none";
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+});
+
+// Sign out
+document.getElementById("signout").addEventListener("click", () => {
+    auth.signOut().then(() => {
+        document.getElementById("user-info").style.display = "none";
+        googleButton.style.display = "inline-block";
+    });
+});
