@@ -3,17 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in with Google</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Google Sign-In Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #user-photo {
+            border-radius: 50%;
+            width: 100px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
-
 <body>
     <div class="container">
         <h1>Welcome!</h1>
         <button id="google-signin">Sign in with Google</button>
+
         <div id="user-info" style="display:none;">
             <p id="user-name"></p>
             <img id="user-photo" alt="Profile Picture">
+            <br>
             <button id="signout">Sign Out</button>
         </div>
     </div>
@@ -21,6 +38,52 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="script.js"></script>
+
+    <script>
+        // 🔑 Replace with your Firebase config
+        const firebaseConfig = {
+  apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+  authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+  projectId: "swimsafeinitiative-7809c",
+  storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+  messagingSenderId: "1025750665332",
+  appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+  measurementId: "G-5W2JEV3VR3"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Wait until DOM is loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            const googleButton = document.getElementById("google-signin");
+            const signOutButton = document.getElementById("signout");
+
+            // Sign in
+            googleButton.addEventListener("click", () => {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider)
+                    .then(result => {
+                        const user = result.user;
+                        document.getElementById("user-name").textContent = `Hello, ${user.displayName}`;
+                        document.getElementById("user-photo").src = user.photoURL;
+                        document.getElementById("user-info").style.display = "block";
+                        googleButton.style.display = "none";
+                    })
+                    .catch(error => {
+                        console.error("Sign-in error:", error);
+                    });
+            });
+
+            // Sign out
+            signOutButton.addEventListener("click", () => {
+                auth.signOut().then(() => {
+                    document.getElementById("user-info").style.display = "none";
+                    googleButton.style.display = "inline-block";
+                });
+            });
+        });
+    </script>
 </body>
 </html>
