@@ -27,24 +27,27 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+const auth = firebase.auth();
 
-        // Redirect if already signed in
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                window.location.href = "signedin.html";
-            }
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const googleButton = document.getElementById("google-signin");
 
-        // Sign in with Google
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById("google-signin").addEventListener("click", () => {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider)
-                    .then(() => window.location.href = "signedin.html")
-                    .catch(err => console.error(err));
-            });
-        });
+    // Optional: Only redirect if you really want to skip login page
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            console.log("Already signed in as:", user.displayName);
+            // Comment this out while testing to avoid loops
+            // window.location.href = "signedin.html";
+        }
+    });
+
+    googleButton.addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then(() => window.location.href = "signedin.html")
+            .catch(err => console.error(err));
+    });
+});
     </script>
 </body>
 </html>
