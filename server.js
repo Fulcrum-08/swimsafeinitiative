@@ -1,47 +1,95 @@
-const express = require("express");
-const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
-const path = require("path");
+import express from "express";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.static("public"));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Nodemailer transporter (use Gmail app password!)
+// Passport Google OAuth setup
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "/auth/google/callback"
+    },
+    (accessToken, refreshToken, profile, done) => {
+      return done(null, profile);
+    }
+  )
+);
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
+
+// Nodemailer setup
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "swimsafeinitiative@gmail.com",
-    pass: process.env.GMAIL_APP_PASSWORD // set in env variable
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
-// API endpoint for sign-up requests
-app.post("/signup-request", async (req, res) => {
-  const { name, email, event } = req.body;
+// Routes
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
-  if (!name || !email || !event) {
-    return res.status(400).json({ success: false, message: "Missing fields" });
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    res.redirect("/");
   }
+);
 
+app.get("/auth/logout", (req, res) => {
+  req.logout(() => {
+    res.redirect("/");
+  });
+});
+
+app.get("/auth/status", (req, res) => {
+  if (req.user) {
+    res.json({ loggedIn: true, user: req.user });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
+
+app.post("/signup-request", (req, res) => {
+  if (!req.user) return res.status(401).json({ success: false, message: "Not logged in" });
+
+  const { event } = req.body;
   const mailOptions = {
-    from: "swimsafeinitiative@gmail.com",
-    to: "swimsafeinitiative@gmail.com",
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
     subject: "New Sign-Up Request",
-    text: `📅 Event: ${event}\n👤 Name: ${name}\n✉️ Email: ${email}`
+    text: `User ${req.user.displayName} (${req.user.emails[0].value}) requested to sign up for: ${event}`
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Error sending mail:", err);
-    res.status(500).json({ success: false, message: "Error sending email" });
-  }
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) return res.json({ success: false, error });
+    res.json({ success: true, info });
+  });
 });
 
-// Start server
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
