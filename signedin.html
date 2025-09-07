@@ -4,51 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signed In</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(to bottom right, #6dd5fa, #2980b9);
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+            position: relative;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin: 5px 0;
+        #user-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
         #signout {
-            margin-top: 30px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #fff;
-            color: #4285f4;
-            border: none;
-            border-radius: 4px;
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            padding: 5px 10px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            z-index: 1000;
         }
 
-        #signout:hover {
-            transform: scale(1.05);
+        iframe {
+            border: 0;
+            width: 800px;
+            height: 600px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <h1>Welcome!</h1>
-    <p id="user-name"></p>
-    <p id="user-email"></p>
+    <img id="user-photo" alt="Profile Picture">
     <button id="signout">Sign Out</button>
+
+    <iframe src="https://calendar.google.com/calendar/embed?src=swimsafeinitiative%40gmail.com&ctz=America%2FNew_York" frameborder="0" scrolling="no"></iframe>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -68,21 +71,20 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Display user info
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById("user-name").textContent = `Name: ${user.displayName}`;
-                document.getElementById("user-email").textContent = `Email: ${user.email}`;
-            } else {
-                // Redirect to sign-in page if not logged in
-                window.location.replace("index.html");
-            }
-        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const userPhoto = document.getElementById("user-photo");
+            const signOutButton = document.getElementById("signout");
 
-        // Sign out button
-        document.getElementById("signout").addEventListener("click", () => {
-            auth.signOut().then(() => {
-                window.location.replace("index.html");
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    userPhoto.src = user.photoURL;
+                } else {
+                    window.location.replace("index.html");
+                }
+            });
+
+            signOutButton.addEventListener("click", () => {
+                auth.signOut().then(() => window.location.replace("index.html"));
             });
         });
     </script>
