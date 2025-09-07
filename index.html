@@ -1,103 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to SwimSafe Initiative</title>
-    <style>
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to bottom right, #6dd5fa, #2980b9);
-            color: white;
-            font-family: Arial, sans-serif;
-            position: relative;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to SwimSafe Initiative</title>
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom right, #6dd5fa, #2980b9);
+      color: white;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
 
-        h1 {
-            font-size: 3rem;
-            text-align: center;
-            max-width: 80%;
-        }
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      max-width: 80%;
+    }
 
-        #google-signin {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #fff;
-            color: #4285f4;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease;
-        }
+    #google-signin {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #fff;
+      color: #4285f4;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
 
-        #google-signin:hover {
-            transform: scale(1.05);
-        }
-    </style>
+    #google-signin:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to the SwimSafe Initiative!</h1>
-    <button id="google-signin">Sign in with Google</button>
+  <h1>Welcome to the SwimSafe Initiative!</h1>
+  <button id="google-signin">Sign in with Google</button>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
-            authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
-            projectId: "swimsafeinitiative-7809c",
-            storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
-            messagingSenderId: "1025750665332",
-            appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
-            measurementId: "G-5W2JEV3VR3"
-        };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAjzRxWxrxq8KUD9fStc8VvQqJ9eB8edWw",
+      authDomain: "swimsafeinitiative-7809c.firebaseapp.com",
+      projectId: "swimsafeinitiative-7809c",
+      storageBucket: "swimsafeinitiative-7809c.firebasestorage.app",
+      messagingSenderId: "1025750665332",
+      appId: "1:1025750665332:web:25e91eb951afeb11f2e921",
+      measurementId: "G-5W2JEV3VR3"
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-        const ADMIN_EMAIL = "swimsafeinitiative@gmail.com";
+    // ✅ only this email should go to admin
+    const ADMIN_EMAIL = "swimsafeinitiative@gmail.com";
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const googleButton = document.getElementById("google-signin");
+    document.addEventListener("DOMContentLoaded", () => {
+      const googleButton = document.getElementById("google-signin");
 
-            // Sign in with Google
-            googleButton.addEventListener("click", () => {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider)
-                    .then(result => {
-                        const user = result.user;
-                        if (user.email === ADMIN_EMAIL) {
-                            window.location.replace("admin.html");
-                        } else {
-                            window.location.replace("signedin.html");
-                        }
-                    })
-                    .catch(err => console.error(err));
-            });
+      // Sign in with Google
+      googleButton.addEventListener("click", () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+          .then(result => {
+            const user = result.user;
+            if (user.email === ADMIN_EMAIL) {
+              window.location.replace("admin.html");
+            } else {
+              window.location.replace("signedin.html");
+            }
+          })
+          .catch(err => console.error(err));
+      });
 
-            // Redirect if already signed in
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    if (user.email === ADMIN_EMAIL) {
-                        window.location.replace("admin.html");
-                    } else {
-                        window.location.replace("signedin.html");
-                    }
-                }
-            });
-        });
-    </script>
+      // Redirect if already signed in
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          if (user.email === ADMIN_EMAIL) {
+            window.location.replace("admin.html");
+          } else {
+            window.location.replace("signedin.html");
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>
